@@ -1,26 +1,309 @@
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Fancy Form</title>
-
-  <!-- You may add more stuff here -->
-  <link href="style.css" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Currency Swap Form</title>
+  <!-- tailwind css cdn for dev purposes in order to minimise setup requirement -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- custom css stylesheet -->
+  <link href="style.css" rel="stylesheet">
+  <!-- import google font prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
+<body class="bg-indigo-700 justify-center items-center h-screen">
+  <div class="text-center">
+    <!-- site header currency swap form -->
+    <div class="mb-16">
+      <h1 class="text-3xl prompt-medium text-white inline-block">Currency </h1>
+      <h1 class="text-3xl prompt-medium text-green-400 inline-block">Swap</h1>
+      <h1 class="text-3xl prompt-medium text-white inline-block"> Form</h1>
+    </div>
+    <!-- site body comprising of currency swap function -->
+    <div class="bg-indigo-600 glass-container border-2 border-green-400 p-10">
+      <form onsubmit="return false" class="mt-4">
+        <div class="flex flex-col gap-8 md:flex-row">
+          <!-- input field and currency selection -->
+          <div class="bg-indigo-700 glass-container p-6 rounded-3xl shadow-lg h-40 flex flex-col justify-center">
+            <label for="inputAmount" class="mr-auto prompt-light text-white mb-6">To</label>
+            <div>
+              <input id="inputAmount" class="bg-transparent text-white rounded-full mb-4 mr-4 h-12 w-40 pl-4 border-b-2 border-green-400 focus:outline-none" />
+              <select id="inputCurrency" class="bg-indigo-700 p-2 text-white prompt-medium h-12 w-20 focus:outline-none" name="inputCurrency"></select>
+            </div>
+          </div>
+          <!-- output field and currency selection -->
+          <div class="bg-indigo-700 glass-container p-6 rounded-3xl shadow-lg h-40 flex flex-col justify-center">
+            <label for="outputAmount" class="mr-auto prompt-light text-white mb-6">From</label>
+            <div>
+              <input id="outputAmount" class="bg-transparent text-white rounded-full mb-4 mr-4 h-12 w-40 pl-4 border-b-2 border-green-400 focus:outline-none" />
+              <select id="outputCurrency" class="bg-indigo-700 p-2 text-white prompt-medium h-12 w-20 focus:outline-none" name="outputCurrency"></select>
+            </div>
+          </div>
+        </div>
+        <!-- overlay disables site -->
+        <div id="overlay" class="fixed inset-0 bg-transparent bg-opacity-50 z-50 hidden"></div>
+        <!-- proceed button -->
+        <button id="proceedButton" class="bg-white text-indigo-700 text-lg prompt-medium px-20 py-4 rounded-lg mt-11 highlight">Proceed</button>
+        <!-- error popup -->
+        <div id="errorPopup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-800 text-white p-8 rounded-lg hidden">
+          <p id="errorRes" class="inline-block"></p>
+          <button class="bg-indigo-700 hover:bg-indigo-600 transition duration-300 text-white py-2 px-4 rounded-lg mt-8" onclick="closePopup()">Ok, I understand</button>
+        </div>
+        <!-- confirmation popup -->
+        <div id="confirmPopup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-800 text-white p-8 rounded-lg hidden">
+          <p id="confirmRes" class="inline-block"></p>
+          <button class="bg-gray-500 hover:bg-gray-400 transition duration-300 text-white py-2 px-4 rounded-lg mt-8 md:mr-2" onclick="closePopup()">Cancel</button>
+          <button class="bg-indigo-700 hover:bg-indigo-600 transition duration-300 text-white py-2 px-4 rounded-lg mt-8 md:ml-2" onclick="closePopup()">Yes, I confirm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    const proceedButton = document.getElementById('proceedButton');
+    const errorPopup = document.getElementById('errorPopup');
+    const confirmPopup = document.getElementById('confirmPopup');
+    const overlay = document.getElementById('overlay');
 
-<body>
+    proceedButton.addEventListener('click', function() {
+      proceedButton.classList.add('clicked');
+      // highlight reappears after 100ms
+      setTimeout(function() {
+        proceedButton.classList.remove('clicked');
+      }, 100);
 
-  <!-- You may reorganise the whole HTML, as long as your form achieves the same effect. -->
-  <form onsubmit="return !1">
-    <h5>Swap</h5>
-    <label for="input-amount">Amount to send</label>
-    <input id="input-amount" />
+      const inputAmount = parseFloat(document.getElementById('inputAmount').value);
+      const inputCurrency = document.getElementById('inputCurrency').value;
+      const outputAmount = parseFloat(document.getElementById('outputAmount').value);
+      const outputCurrency = document.getElementById('outputCurrency').value;
+      const errorMessage = 'Please select a currency for the swap before proceeding';
 
-    <label for="output-amount">Amount to receive</label>
-    <input id="output-amount" />
+      // check if input amount is a nan value
+      if (inputAmount == 0 || isNaN(inputAmount)) {
+        document.getElementById('errorRes').textContent = errorMessage;
+        viewPopup(errorPopup);
+        console.log('error input nan value is not allowed');
+      }
+      else {
+        const confirmMessage = `Please confirm your currency swap of ${inputAmount} ${inputCurrency} -> ${outputAmount} ${outputCurrency}`;
+        document.getElementById('confirmRes').textContent = confirmMessage;
+        viewPopup(confirmPopup);
+        console.log('performing currency swap...');
+      }
+    });
 
-    <button>CONFIRM SWAP</button>
-  </form>
-  <script src="script.js"></script>
+    // disable fields and buttons when popup appears
+    function viewPopup(popup) {
+      popup.classList.remove('hidden');
+      overlay.classList.remove('hidden');
+      document.getElementById('inputAmount').disabled = true;
+      document.getElementById('outputAmount').disabled = true;
+      document.getElementById('inputCurrency').disabled = true;
+      document.getElementById('outputCurrency').disabled = true;
+      document.getElementById('proceedButton').disabled = true;
+    }
+
+    // enable fields and buttons when popup disappears
+    function hidePopup(popup) {
+      popup.classList.add('hidden');
+      overlay.classList.add('hidden');
+      document.getElementById('inputAmount').disabled = false;
+      document.getElementById('outputAmount').disabled = false;
+      document.getElementById('inputCurrency').disabled = false;
+      document.getElementById('outputCurrency').disabled = false;
+      document.getElementById('proceedButton').disabled = false;
+    }
+
+    function closePopup() {
+      hidePopup(errorPopup);
+      hidePopup(confirmPopup);
+    }
+
+    // site must be hosted locally in order to fetch data from ext json
+    // file so i decided to manually include the data within script tag
+    const tokenData =
+    [
+      {
+        "currency": "BLUR",
+        "price": 0.20811525423728813
+      },
+      {
+        "currency": "bNEO",
+        "price": 7.1282679
+      },
+      {
+        "currency": "BUSD",
+        "price": 0.999530687059322
+      },
+      {
+        "currency": "USD",
+        "price": 1
+      },
+      {
+        "currency": "ETH",
+        "price": 1645.9337373737374
+      },
+      {
+        "currency": "GMX",
+        "price": 36.345114372881355
+      },
+      {
+        "currency": "STEVMOS",
+        "price": 0.07276706779661017
+      },
+      {
+        "currency": "LUNA",
+        "price": 0.40955638983050846
+      },
+      {
+        "currency": "RATOM",
+        "price": 10.250918915254237
+      },
+      {
+        "currency": "STRD",
+        "price": 0.7386553389830508
+      },
+      {
+        "currency": "EVMOS",
+        "price": 0.06246181355932203
+      },
+      {
+        "currency": "IBCX",
+        "price": 41.26811355932203
+      },
+      {
+        "currency": "IRIS",
+        "price": 0.0177095593220339
+      },
+      {
+        "currency": "ampLUNA",
+        "price": 0.49548589830508477
+      },
+      {
+        "currency": "KUJI",
+        "price": 0.675
+      },
+      {
+        "currency": "STOSMO",
+        "price": 0.431318
+      },
+      {
+        "currency": "USDC",
+        "price": 0.9974275652796609
+      },
+      {
+        "currency": "axlUSDC",
+        "price": 0.989832
+      },
+      {
+        "currency": "ATOM",
+        "price": 7.186657333333334
+      },
+      {
+        "currency": "STATOM",
+        "price": 8.512162050847458
+      },
+      {
+        "currency": "OSMO",
+        "price": 0.3772974333333333
+      },
+      {
+        "currency": "rSWTH",
+        "price": 0.00408771
+      },
+      {
+        "currency": "STLUNA",
+        "price": 0.44232210169491526
+      },
+      {
+        "currency": "LSI",
+        "price": 67.69661525423729
+      },
+      {
+        "currency": "OKB",
+        "price": 42.97562059322034
+      },
+      {
+        "currency": "OKT",
+        "price": 13.561577966101694
+      },
+      {
+        "currency": "SWTH",
+        "price": 0.004039850455012084
+      },
+      {
+        "currency": "USC",
+        "price": 0.994
+      },
+      {
+        "currency": "WBTC",
+        "price": 26002.82202020202
+      },
+      {
+        "currency": "wstETH",
+        "price": 1872.2579742372882
+      },
+      {
+        "currency": "YieldUSD",
+        "price": 1.0290847966101695
+      },
+      {
+        "currency": "ZIL",
+        "price": 0.01651813559322034
+      }
+    ];
+
+    // generate select options for users
+    function generateSelect(selectId, currencies) {
+      const select = document.getElementById(selectId);
+      currencies.forEach(currency => {
+        const option = document.createElement('option');
+        option.value = currency.currency;
+        option.textContent = currency.currency;
+        select.appendChild(option);
+      });
+    }
+
+    generateSelect('inputCurrency', tokenData);
+    generateSelect('outputCurrency', tokenData);
+
+    function handleFieldChange(inputFieldId, outputFieldId) {
+      const inputField = parseFloat(document.getElementById(inputFieldId).value);
+      // check if input field is a nan value
+      if (isNaN(inputField)) {
+        // if yes, clear the output field
+        document.getElementById(outputFieldId).value = '';
+        return;
+      }
+
+      // retrieve selected currencies from input and output fields
+      const inputCurrency = document.getElementById('inputCurrency').value;
+      const outputCurrency = document.getElementById('outputCurrency').value;
+      // compute the exchange rate
+      const inputCurrencyRate = tokenData.find(currency => currency.currency == inputCurrency).price;
+      const outputCurrencyRate = tokenData.find(currency => currency.currency == outputCurrency).price;
+      // calculate the output based on input and exchange rate 
+      let outputAmount = (inputField / inputCurrencyRate) * outputCurrencyRate;
+      // format the output by limiting decimal points of max 4
+      outputAmount = outputAmount.toLocaleString('en', { maximumFractionDigits: 4 });
+      // remove excess zeros unless accompanied by a natural number
+      outputAmount = outputAmount.replace(/,/g, '');
+      // return the value to output field
+      document.getElementById(outputFieldId).value = outputAmount;
+    }
+
+    function handleInputChange() {
+      handleFieldChange('inputAmount', 'outputAmount');
+    }
+
+    function handleOutputChange() {
+      handleFieldChange('outputAmount', 'inputAmount');
+    }
+
+    document.getElementById('inputAmount').addEventListener('input', handleInputChange);
+    document.getElementById('inputCurrency').addEventListener('change', handleInputChange);
+    document.getElementById('outputCurrency').addEventListener('change', handleInputChange);
+  </script>
 </body>
-
 </html>
