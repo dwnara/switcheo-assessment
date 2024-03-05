@@ -1,9 +1,5 @@
 TA for Switcheo Labs Frontend Engineer Intern Position
 
-Problem 1: Three ways to sum to n
-Problem 2: Fancy Form
-Problem 3: Messy React
-
 Questions have been completed with no setup requirements
 
 Due to the nature of the project setup,
