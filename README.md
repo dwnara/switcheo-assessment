@@ -7,5 +7,6 @@ Due to the nature of the project, the following adjustments have been made
 - Manually embedded JSON data within the script tag in the HTML file, facilitating easy rendering
 
 While I acknowledge that these methods deviate from the standard practices in web application development, they enable direct viewing of the page without necessarily setting up a local development environment.
+With that being said, kindly view the index.html file in Google Chrome for the best viewing experience.
 
 Thank you for reading!
